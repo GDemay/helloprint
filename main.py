@@ -58,13 +58,23 @@ def get_sku(id):
         return "Not found", 404
     return sku.to_json()
 
-
+# GEt all SKU *
 # Get all SKU from dataset.json
+
+
 @app.route("/sku")
 def get_skus():
     f = open("data/dataset.json", "r")
-    data = json.load(f)
-    return json.dumps(data[0])
+    # Set all SKU to the database
+
+    for sku in json.load(f):
+        db.session.add(SKUModel(**sku))
+    db.session.commit()
+
+    return json.dumps([sku.to_json() for sku in SKUModel.query.all()])
+    # data = json.load(f)
+
+    # return json.dumps(data[0])
 
 
 # Get the 5 best prices for a SKU
