@@ -50,32 +50,39 @@ class SKUModel(db.Model):
         }
 
 
+# Retrieve the current timezone using the WorldTimeAPI (http://worldtimeapi.org) for any country available in the service
+@app.route("/timezone/<string:area>/<string:region>")
+def timezone( area, region ):
+    import requests
+     
+    url = "http://worldtimeapi.org/api/timezone/{}/{}".format(area, region)
+    response = requests.get(url)
+    if not response.ok:
+        return  {"response error": response.text, "http code":response.status_code }
+    return response.json()["datetime"]
+  
 # Get one SKU
 @app.route("/sku/<int:id>")
 def get_sku(id):
     sku = SKUModel.query.get(id)
-    if not sku:
-        return "Not found", 404
-    return sku.to_json()
+    return sku.to_json() if sku else ("Not found", 404)
 
-# GEt all SKU *
-# Get all SKU from dataset.json
-
-
+# Get all SKUs
 @app.route("/sku")
+def get_all_sku():
+    skus = SKUModel.query.all()
+    return json.dumps([sku.to_json() for sku in skus])
+  
+@app.route("/sku/update", methods=["GET"])
 def get_skus():
     f = open("data/dataset.json", "r")
     # Set all SKU to the database
 
     for sku in json.load(f):
-        db.session.add(SKUModel(**sku))
+      sku = SKUModel( sku=sku["SKU"], quantity=sku["Quantity"], price=sku["Price £"])
+      db.session.add(sku)
     db.session.commit()
-
-    return json.dumps([sku.to_json() for sku in SKUModel.query.all()])
-    # data = json.load(f)
-
-    # return json.dumps(data[0])
-
+    return "OK", 200
 
 # Get the 5 best prices for a SKU
 @app.route("/sku/best", methods=["GET"])
