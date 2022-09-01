@@ -1,5 +1,9 @@
 from flask import Flask, escape, request
 import email_validator
+import requests
+
+from statistics import median
+
 import json
 
 app = Flask(__name__)
@@ -28,6 +32,8 @@ class SKUClass(FlaskForm):
 from flask_sqlalchemy import SQLAlchemy
 
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////tmp/sku.db"
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
+
 db = SQLAlchemy(app)
 
 
@@ -53,13 +59,12 @@ class SKUModel(db.Model):
 # Retrieve the current timezone using the WorldTimeAPI (http://worldtimeapi.org) for any country available in the service
 @app.route("/timezone/<string:area>/<string:region>")
 def timezone( area, region ):
-    import requests
      
     url = "http://worldtimeapi.org/api/timezone/{}/{}".format(area, region)
     response = requests.get(url)
     if not response.ok:
         return  {"response error": response.text, "http code":response.status_code }
-    return response.json()["datetime"]
+    return {"UTF:": response.json()["utc_offset"]}
   
 # Get one SKU
 @app.route("/sku/<int:id>")
@@ -124,3 +129,33 @@ def delete_sku(id):
     db.session.delete(sku)
     db.session.commit()
     return {"sku": sku.to_json()}
+
+# Print the SKU with the highest price
+@app.route("/sku/highest")
+def get_highest_sku():
+    sku = SKUModel.query.order_by(SKUModel.price.desc()).first()
+    return {"sku": sku.to_json()}
+
+# Return the lowest price for a SKU
+@app.route("/sku/lowest")
+def get_lowest_sku():
+    sku = SKUModel.query.order_by(SKUModel.price.asc()).first()
+    return {"sku": sku.to_json()}
+  
+# return median price of all SKU. 
+@app.route("/sku/median")
+def get_median_sku():
+    skus = SKUModel.query.all()
+    prices = [sku.price for sku in skus]
+    return {"median": median(prices)}
+
+@app.route("/test")
+def test():
+    scheduled()
+    return {"ok": "ok"}
+  
+@app.cli.command()
+def scheduled():
+    print(get_highest_sku()["sku"])
+    print(get_lowest_sku()["sku"])
+    print(get_median_sku()["median"])
