@@ -1,25 +1,22 @@
-from flask import Flask, escape, request
-import email_validator
-import requests
-
+import json
 from statistics import median
 
-import json
+import email_validator
+import requests
+from flask import Flask, escape, request
+from flask_sqlalchemy import SQLAlchemy
+from flask_wtf import FlaskForm
+from wtforms import DecimalField, HiddenField, IntegerField, StringField, SubmitField
+from wtforms.validators import Email
 
 app = Flask(__name__)
 
 app.config["SECRET_KEY"] = "any secret key"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////tmp/skudb.db"
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 
-
-@app.route("/")
-def hello():
-    return "Hello World!"
-
-
-from flask_wtf import FlaskForm
-
-from wtforms import SubmitField, HiddenField, StringField, IntegerField, DecimalField
-from wtforms.validators import Email
+db = SQLAlchemy(app)
+db.create_all()
 
 
 class SKUClass(FlaskForm):
@@ -27,14 +24,6 @@ class SKUClass(FlaskForm):
     sku = StringField("sky")
     quantity = IntegerField("quantity")
     price = DecimalField("price")
-
-
-from flask_sqlalchemy import SQLAlchemy
-
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////tmp/sku.db"
-app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = True
-
-db = SQLAlchemy(app)
 
 
 class SKUModel(db.Model):
@@ -56,38 +45,47 @@ class SKUModel(db.Model):
         }
 
 
+@app.route("/")
+def hello():
+    return "Hello World!"
+
+
 # Retrieve the current timezone using the WorldTimeAPI (http://worldtimeapi.org) for any country available in the service
 @app.route("/timezone/<string:area>/<string:region>")
-def timezone( area, region ):
-     
+def timezone(area, region):
+
     url = "http://worldtimeapi.org/api/timezone/{}/{}".format(area, region)
     response = requests.get(url)
     if not response.ok:
-        return  {"response error": response.text, "http code":response.status_code }
+        return {"response error": response.text, "http code": response.status_code}
     return {"UTF:": response.json()["utc_offset"]}
-  
+
+
 # Get one SKU
 @app.route("/sku/<int:id>")
 def get_sku(id):
     sku = SKUModel.query.get(id)
     return sku.to_json() if sku else ("Not found", 404)
 
+
 # Get all SKUs
 @app.route("/sku")
 def get_all_sku():
     skus = SKUModel.query.all()
     return json.dumps([sku.to_json() for sku in skus])
-  
+
+
 @app.route("/sku/update", methods=["GET"])
 def get_skus():
     f = open("data/dataset.json", "r")
     # Set all SKU to the database
 
     for sku in json.load(f):
-      sku = SKUModel( sku=sku["SKU"], quantity=sku["Quantity"], price=sku["Price £"])
-      db.session.add(sku)
+        sku = SKUModel(sku=sku["SKU"], quantity=sku["Quantity"], price=sku["Price £"])
+        db.session.add(sku)
     db.session.commit()
     return "OK", 200
+
 
 # Get the 5 best prices for a SKU
 @app.route("/sku/best", methods=["GET"])
@@ -130,30 +128,35 @@ def delete_sku(id):
     db.session.commit()
     return {"sku": sku.to_json()}
 
+
 # Print the SKU with the highest price
 @app.route("/sku/highest")
 def get_highest_sku():
     sku = SKUModel.query.order_by(SKUModel.price.desc()).first()
     return {"sku": sku.to_json()}
 
+
 # Return the lowest price for a SKU
 @app.route("/sku/lowest")
 def get_lowest_sku():
     sku = SKUModel.query.order_by(SKUModel.price.asc()).first()
     return {"sku": sku.to_json()}
-  
-# return median price of all SKU. 
+
+
+# return median price of all SKU.
 @app.route("/sku/median")
 def get_median_sku():
     skus = SKUModel.query.all()
     prices = [sku.price for sku in skus]
     return {"median": median(prices)}
 
+
 @app.route("/test")
 def test():
     scheduled()
     return {"ok": "ok"}
-  
+
+
 @app.cli.command()
 def scheduled():
     print(get_highest_sku()["sku"])
