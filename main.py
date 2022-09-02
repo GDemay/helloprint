@@ -86,7 +86,9 @@ def get_all_sku():
 
 @app.route("/sku/update", methods=["GET"])
 def get_skus():
+  try:
     f = open("data/dataset.json", "r")
+  
     # Set all SKU to the database
 
     for sku in json.load(f):
@@ -94,6 +96,8 @@ def get_skus():
         db.session.add(sku)
     db.session.commit()
     return "OK", 200
+  except Exception as e:
+    return {"error": str(e)}, 500
 
 
 # Get the 5 best prices for a SKU
