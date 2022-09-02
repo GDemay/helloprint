@@ -12,7 +12,7 @@ from wtforms.validators import Email
 app = Flask(__name__)
 
 app.config["SECRET_KEY"] = "any secret key"
-app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////tmp/skudb.db"
+app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////tmp/sku.db"
 app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
 
 db = SQLAlchemy(app)
