@@ -13,10 +13,19 @@ app = Flask(__name__)
 
 app.config["SECRET_KEY"] = "any secret key"
 app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////tmp/sku.db"
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = True
+app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
-db.create_all()
+
+
+def initialize_db(app):
+    app.app_context().push()
+    db.init_app(app)
+    db.create_all()
+    db.session.commit()
+
+
+initialize_db(app)
 
 
 class SKUClass(FlaskForm):
@@ -132,8 +141,11 @@ def delete_sku(id):
 # Print the SKU with the highest price
 @app.route("/sku/highest")
 def get_highest_sku():
-    sku = SKUModel.query.order_by(SKUModel.price.desc()).first()
-    return {"sku": sku.to_json()}
+    try:
+      sku = SKUModel.query.order_by(SKUModel.price.desc()).first()
+      return {"sku": sku.to_json()}
+    except Exception as e:
+      return {"message": str(e)}, 500
 
 
 # Return the lowest price for a SKU
@@ -159,6 +171,8 @@ def test():
 
 @app.cli.command()
 def scheduled():
-    print(get_highest_sku()["sku"])
-    print(get_lowest_sku()["sku"])
-    print(get_median_sku()["median"])
+    if get_highest_sku():
+      print(get_highest_sku())
+    #print(get_highest_sku()["sku"])
+    #print(get_lowest_sku()["sku"])
+    #print(get_median_sku()["median"])
