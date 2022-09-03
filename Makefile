@@ -1,8 +1,8 @@
 init:
-	export FLASK_APP=main.py
+	export FLASK_APP=$PWD/app/app.py
 
 run:
-	flask --app main.py --debug run
+	flask --app app/app.py --debug run
 
 db:
 	python3 init.py
@@ -10,6 +10,3 @@ db:
 create_env:
 	python3 -m venv ~/.venv/bin/flask
 	source ~/.venv/bin/flask/bin/activate
-
-scheduled:
-	flask --app main.py scheduled
