@@ -15,9 +15,9 @@ class BaseTestCase(TestCase):
 
     def setUp(self):
         db.create_all()
-        sku = SKUModel(sku="WWWWWWWWWWW IS FOR TEST", quantity=42, price=3)
-        db.session.add(sku)
-        db.session.commit()
+        #sku = SKUModel(sku="Test", quantity=42, price=3)
+        #db.session.add(sku)
+        #db.session.commit()
 
     def tearDown(self):
         db.session.remove()

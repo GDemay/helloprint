@@ -15,4 +15,5 @@ class TestConfig(BaseConfig):
     SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'
 
 class BasicConfig(BaseConfig):
-    DATASET_PATH = "data/dataset.json"
+    DATASET_PATH = "app/data/dataset.json"
+

@@ -3,8 +3,11 @@ from flask import Flask
 from flask_crontab import Crontab
 from app.routes import routes_blueprint
 from app.database import db
-from app.config import BaseConfig, TestConfig
+from app.config import BaseConfig, BasicConfig, TestConfig
 import os
+from statistics import median
+
+from app.models import SKUModel
 
 
 def create_app():
@@ -14,6 +17,7 @@ def create_app():
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.init_app(app)
     app.register_blueprint(routes_blueprint)
+    crontab.init_app(app)
     return app
 
 
@@ -32,35 +36,16 @@ def setup_database(app):
         db.create_all()
         app.logger.info("DB init!")
 
+crontab = Crontab()
 
 if __name__ == "__main__":
     app = create_app()
-    # Because this is just a demonstration we set up the database like this.
-    if not os.path.isfile("/tmp/ssku.db"):
+    if not os.path.isfile(BaseConfig.SQLALCHEMY_DATABASE_URI):
         setup_database(app)
     app.run()
-""" 
-
-app = Flask(__name__)
 
 
 
-
-app.logger.info("Starting!")
-crontab = Crontab(app)
-
-
-def initialize_db(app):
-    try:
-        db.create_all()
-        app.logger.info("DB init!")
-    except Exception as e:
-        app.logger.error("DB init failed: %s", e)
-
-
-initialize_db(app)
-
-# add crontab job to run */3 8-10 * * *
 @crontab.job(minute="*/1", day_of_week="1-5")
 def scheduled_highest_price():
   try:
@@ -92,4 +77,3 @@ def scheduled_median_price():
       print({"median": median(prices)})
   except Exception as e:
       print("Error while getting SKU", e)
-"""
