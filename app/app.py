@@ -1,16 +1,26 @@
-import os
-
+import requests
 from flask import Flask
 from flask_crontab import Crontab
-
-from app.database import db
 from app.routes import routes_blueprint
+from app.database import db
+from app.config import BaseConfig, TestConfig
+import os
 
 
 def create_app():
     app = Flask(__name__)
     app.config["SECRET_KEY"] = "any secret key"
-    app.config["SQLALCHEMY_DATABASE_URI"] = "sqlite:////tmp/ssku.db"
+    app.config["SQLALCHEMY_DATABASE_URI"] = BaseConfig.SQLALCHEMY_DATABASE_URI
+    app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+    db.init_app(app)
+    app.register_blueprint(routes_blueprint)
+    return app
+
+
+def create_app_test():
+    app = Flask(__name__)
+    app.config["SECRET_KEY"] = "any secret key"
+    app.config["SQLALCHEMY_DATABASE_URI"] = TestConfig.SQLALCHEMY_DATABASE_URI
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     db.init_app(app)
     app.register_blueprint(routes_blueprint)

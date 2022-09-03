@@ -6,8 +6,9 @@ from flask import Blueprint, request
 
 from app.database import db
 from app.models import SKUModel
-
+from app.core import get, get_all, update_dataset, get_5_highest, update_21, create, delete, get_lowest
 routes_blueprint = Blueprint("route_blueprint", __name__)
+
 
 @routes_blueprint.route("/")
 def hello():
@@ -29,98 +30,54 @@ def timezone(area, region):
 # Get one SKU
 @routes_blueprint.route("/sku/<int:id>")
 def get_sku(id):
-    sku = db.session.query(SKUModel).get(id)
+    sku = get(id)
     return sku.to_json() if sku else ("Not found", 404)
 
 
 # Get all SKUs
 @routes_blueprint.route("/sku")
 def get_all_sku():
-    skus = db.session.query(SKUModel).all()
-    return json.dumps([sku.to_json() for sku in skus])
+    return json.dumps([sku.to_json() for sku in get_all()])
 
 
 @routes_blueprint.route("/sku/update", methods=["GET"])
-def get_skus():
-    try:
-        f = open("data/dataset.json", "r")
-
-        # Set all SKU to the database
-
-        for sku in json.load(f):
-            sku = SKUModel(
-                sku=sku["SKU"], quantity=sku["Quantity"], price=sku["Price £"]
-            )
-            db.session.add(sku)
-        db.session.commit()
-        return "OK", 200
-    except Exception as e:
-        return {"error": str(e)}, 500
+def update_from_dataset():
+    return update_dataset()
 
 
 # Get the 5 best prices for a SKU
 @routes_blueprint.route("/sku/best", methods=["GET"])
 def get_best_sku():
-    skus = db.session.query(SKUModel).order_by(SKUModel.price.asc()).limit(5).all()
-    return [sku.to_json() for sku in skus]
+    return json.dumps([sku.to_json() for sku in get_5_highest()])
 
 
 # Update a SKU from an ID by increasing it's price by 21%
 @routes_blueprint.route("/sku/<int:id>", methods=["PUT"])
 def update_sku(id):
-    sku = db.session.query(SKUModel).get(id)
-    if not sku:
-        return {"message": "SKU not found"}, 404
-    sku.price = sku.price * 1.21
-    db.session.commit()
-    return sku.to_json()
-
+    return update_21(id)
 
 # Create SKU from form data
 @routes_blueprint.route("/sku", methods=["POST"])
 def create_sku():
-    # data = request.form["sku"]
-    # Create SKU from request form
-    sku = SKUModel(
-        sku=request.form["sku"],
-        quantity=request.form["quantity"],
-        price=request.form["price"],
-    )
-    db.session.add(sku)
-    db.session.commit()
-    return sku.to_json()
+    sku = request.form.get("sku")
+    quantity = request.form.get("quantity")
+    price = request.form.get("price")
+    return create(sku, quantity, price).to_json()
 
 
 # Delete SKU from ID
 @routes_blueprint.route("/sku/<int:id>", methods=["DELETE"])
 def delete_sku(id):
-    try:
-        sku = db.session.query(SKUModel).get(id)
-        if not sku:
-            return {"message": "SKU not found"}, 404
-        db.session.delete(sku)
-        db.session.commit()
-        return {"message:": "SKU deleted"}, 200
-    except Exception as e:
-        return {"error": str(e)}, 500
+    return delete(id)
 
 
 # Return the lowest price for a SKU
 @routes_blueprint.route("/sku/lowest")
 def get_lowest_sku():
-    try:
-        if sku := db.session.query(SKUModel).order_by(SKUModel.price.asc()).first():
-            return sku.to_json()
-        routes_blueprint.logger.error("No SKU found!")
-        return [], 404
-    except Exception:
-        return [], 500
+    return get_lowest().to_json()
 
 
 # return median price of all SKU.
 @routes_blueprint.route("/sku/median")
 def get_median_sku():
-
-    skus = db.session.query(SKUModel).all()
-    prices = [sku.price for sku in skus]
-    return {"median": median(prices)}
+    return {"median": median([sku.price for sku in get_all()])}
