@@ -31,10 +31,28 @@ def update_dataset():
     try:
         # Set all SKU to the database
         for sku in json.load(f):
-            sku = SKUModel(
-                sku=sku["SKU"], quantity=sku["Quantity"], price=sku["Price £"]
-            )
-            db.session.add(sku)
+          sku = SKUModel(
+            sku=sku["sku"],
+            product_title=sku["product_title"],
+            quantity=sku["quantity"],
+            paper_size=sku["paper_size"],
+            finished_size=sku["finished_size"],
+            paper_type=sku["paper_type"],
+            print_type=sku["print_type"],
+            turnaround_time=sku["turnaround_time"],
+            print_page_number=sku["print_page_number"],
+            lamination=sku["lamination"],
+            cover=sku["cover"],
+            fold_type=sku["fold_type"],
+            print_orientation=sku["print_orientation"],
+            product_finishing=sku["product_finishing"],
+            cut_type=sku["cut_type"],
+            sets=sku["sets"],
+            vat_rate=sku["vat_rate"],
+            price=sku["price"],
+            spotUV=sku["spotUV"],
+        )
+          db.session.add(sku)
         db.session.commit()
         return "OK", 200
     except Exception as e:
@@ -60,8 +78,7 @@ def update_21(id):
       return None
     return sku
 
-def create(sku, quantity, price):
-    sku = SKUModel(sku=sku, quantity=quantity, price=price)
+def create(sku: SKUModel):
     if not sku:
         return None
     try:

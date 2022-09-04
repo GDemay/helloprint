@@ -1,3 +1,4 @@
+from itertools import product
 import json
 from statistics import median
 
@@ -59,10 +60,29 @@ def update_sku(id):
 # Create SKU from form data
 @routes_blueprint.route("/sku", methods=["POST"])
 def create_sku():
-    sku = request.form.get("sku")
-    quantity = request.form.get("quantity")
-    price = request.form.get("price")
-    return create(sku, quantity, price).to_json()
+    sku = SKUModel(
+        sku=request.form["sku"],
+        product_title=request.form["product_title"],
+        quantity=request.form["quantity"],
+        paper_size=request.form["paper_size"],
+        finished_size=request.form["finished_size"],
+        paper_type=request.form["paper_type"],
+        print_type=request.form["print_type"],
+        turnaround_time=request.form["turnaround_time"],
+        print_page_number=request.form["print_page_number"],
+        lamination=request.form["lamination"],
+        cover=request.form["cover"],
+        fold_type=request.form["fold_type"],
+        print_orientation=request.form["print_orientation"],
+        product_finishing=request.form["product_finishing"],
+        cut_type=request.form["cut_type"],
+        sets=request.form["sets"],
+        vat_rate=request.form["vat_rate"],
+        price=request.form["price"],
+        spotUV=request.form["spotUV"],
+    )
+    return create(sku).to_json()
+         
 
 
 # Delete SKU from ID

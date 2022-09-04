@@ -6,7 +6,10 @@ class BaseConfig(object):
     DEBUG = False
     # shortened for readability
     SECRET_KEY = '\xbf\xb0\x11\xb1\xcd\xf9\xba\x8bp\x0c...'
-    SQLALCHEMY_DATABASE_URI = "sqlite:////tmp/ssku.db"
+    SQLALCHEMY_PATH = "/tmp/database.db"
+    #SQLALCHEMY_DATABASE_URI = "sqlite:////tmp/sku.db"
+    SQLALCHEMY_DATABASE_URI = "sqlite:///" + SQLALCHEMY_PATH
+
 
 class TestConfig(BaseConfig):
     DEBUG = True

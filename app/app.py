@@ -6,7 +6,7 @@ from app.database import db
 from app.config import BaseConfig, BasicConfig, TestConfig
 import os
 from statistics import median
-
+import click
 from app.models import SKUModel
 
 
@@ -40,10 +40,9 @@ crontab = Crontab()
 
 if __name__ == "__main__":
     app = create_app()
-    if not os.path.isfile(BaseConfig.SQLALCHEMY_DATABASE_URI):
-        setup_database(app)
+    # not os.path.isfile(BaseConfig.SQLALCHEMY_DATABASE_URI):
+    setup_database(app)
     app.run()
-
 
 
 @crontab.job(minute="*/1", day_of_week="1-5")
