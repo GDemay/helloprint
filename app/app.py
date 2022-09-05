@@ -60,18 +60,35 @@ if __name__ == "__main__":
 
 @crontab.job(minute="*/1", day_of_week="1-5")
 def scheduled_highest_price():
-    print(get_highest().to_json())
+    highest = get_highest()
+    if highest.status_code == 200:
+        print("Highest price: " + str(highest.json["price"]))
+    else:
+        print("Error getting highest price")
 
 
 # add crontab job to run */3 8-10 * * *
 @crontab.job(minute="*/3", hour="8-10")
 def scheduled_lowest_price():
-    print(get_lowest().to_json())
-
+    lowest = get_lowest()
+    if lowest.status_code == 200:
+        print("Lowest price: " + str(lowest.json["price"]))
+    else:
+        print("Error getting lowest price")
 
 # add crontab job to run */5 11-12 * * 1,3,5
 
 
 @crontab.job(minute="*/5", hour="11-12", day_of_week="1,3,5")
 def scheduled_median_price():
-    print(get_median())
+    try:
+        skus = db.session.query(SKUModel).order_by(SKUModel.price.asc()).all()
+        if not skus:
+            print(0)
+            return None
+        prices = [sku.price for sku in skus]
+        print(prices)
+        return median(prices)
+    except Exception as e:
+        print(e)
+        return None
