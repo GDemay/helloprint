@@ -105,9 +105,16 @@ def delete(id):
 def get_lowest():
     try:
         sku = db.session.query(SKUModel).order_by(SKUModel.price.asc()).first()
-        if not sku:
-            return Response("No sku found", status=404)
-        return Response(json.dumps(sku.to_json()), status=200, mimetype="application/json")
+        return (
+            Response(
+                json.dumps(sku.to_json()),
+                status=200,
+                mimetype="application/json",
+            )
+            if sku
+            else Response("No sku found", status=404)
+        )
+
     except Exception as e:
         return Response("Error while deleting", status=500)
 
@@ -116,9 +123,15 @@ def get_highest():
     try:
         sku = db.session.query(SKUModel).order_by(
             SKUModel.price.desc()).first()
-        if not sku:
-            return Response("No sku found", status=404)
-        return Response(json.dumps(sku.to_json()), status=200, mimetype="application/json")
+        return (
+            Response(
+                json.dumps(sku.to_json()),
+                status=200,
+                mimetype="application/json",
+            )
+            if sku
+            else Response("No sku found", status=404)
+        )
 
     except Exception as e:
         return Response(f"Error while getting SKU {e}",  status=500, mimetype="application/json")
