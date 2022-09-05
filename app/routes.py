@@ -74,7 +74,7 @@ def create_sku():
 # Delete SKU from ID
 @routes_blueprint.route("/sku/<int:id>", methods=["DELETE"])
 def delete_sku(id):
-    return delete(id)
+    return delete(id), 200
 
 
 # Return the lowest price for a SKU
