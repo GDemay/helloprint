@@ -11,7 +11,7 @@ from app.models import SKUModel, db
 from app.routes import routes_blueprint
 
 SQLALCHEMY_PATH = "/tmp/databassdsdsdsdssddsdse.db"
-SQLALCHEMY_DATABASE_URI = "sqlite:///" + SQLALCHEMY_PATH
+SQLALCHEMY_DATABASE_URI = f"sqlite:///{SQLALCHEMY_PATH}"
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI

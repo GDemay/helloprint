@@ -1,14 +1,16 @@
 import os
 
 
-# default config
+
+
 class BaseConfig(object):
     DEBUG = False
     # shortened for readability
     SECRET_KEY = "\xbf\xb0\x11\xb1\xcd\xf9\xba\x8bp\x0c..."
     SQLALCHEMY_PATH = "/tmp/thisisatest.db"
     # SQLALCHEMY_DATABASE_URI = "sqlite:////tmp/sku.db"
-    SQLALCHEMY_DATABASE_URI = "sqlite:///" + SQLALCHEMY_PATH
+    SQLALCHEMY_DATABASE_URI = f"sqlite:///{SQLALCHEMY_PATH}"
+
 
 
 class TestConfig(BaseConfig):
