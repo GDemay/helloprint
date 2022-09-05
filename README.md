@@ -46,17 +46,16 @@ Running a specific job:
 flask --app app/app.py crontab run 80d5352791cf66871f31e8f33d16e9f0
 
 ## Routes:
-GET SKU: /sku/<sku> # Get a SKU
-GET SKUs: /sku # Get all SKUs
-GET UPDATE_DATASET: /sku/update_dataset # Update the dataset
-GET BEST_SKU: /sku/best/ # Get the 5 highest SKY
-GET INCREASED_SKU: /sku/<sku>/ # Update by 21%
-POST CREATE_SKU: /sku/create # Create a SKU
-DELETE DELETE_SKU: /sku/<sku> # Delete a SKU
-LOWEST_SKU: /sku/lowest # Get the first SKU by Lowest price
-MEDIAN_SKU: /sku/median # Get the first SKU by Median price
-
-GET TIMEZONE: /timezone/<area>/<region> # Get the timezones from area or region
+- GET SKU: /sku/<sku> # Get a SKU
+è GET SKUs: /sku # Get all SKUs
+- GET UPDATE_DATASET: /sku/update_dataset # Update the dataset
+- GET BEST_SKU: /sku/best/ # Get the 5 highest SKY
+- GET INCREASED_SKU: /sku/<sku>/ # Update by 21%
+- POST CREATE_SKU: /sku/create # Create a SKU
+- DELETE DELETE_SKU: /sku/<sku> # Delete a SKU
+- LOWEST_SKU: /sku/lowest # Get the first SKU by Lowest price
+- MEDIAN_SKU: /sku/median # Get the first SKU by Median price
+- GET TIMEZONE: /timezone/<area>/<region> # Get the timezones from area or region
 
 ## Improvement: 
 
