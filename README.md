@@ -21,3 +21,9 @@ f00d927b4ce94adf0e0da4a3b1ddeedd -> app.app:scheduled_median_price
 
 flask --app app/app.py crontab run f00d927b4ce94adf0e0da4a3b1ddeedd
 
+
+Improvement: 
+
+Docker
+Better tests
+Better comments
