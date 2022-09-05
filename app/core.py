@@ -99,7 +99,7 @@ def get_lowest():
         sku = db.session.query(SKUModel).order_by(SKUModel.price.asc()).first()
         if not sku:
             return None
-        return sku.price
+        return sku
     except Exception as e:
         LOGGER.error("Error while getting lowest SKU", e)
         return None
@@ -111,7 +111,7 @@ def get_highest():
             SKUModel.price.desc()).first()
         if not sku:
             return None
-        return sku.price
+        return sku
 
     except Exception as e:
         LOGGER.error("Error while getting highest SKU", e)

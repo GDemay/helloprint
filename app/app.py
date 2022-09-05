@@ -60,13 +60,13 @@ if __name__ == "__main__":
 
 @crontab.job(minute="*/1", day_of_week="1-5")
 def scheduled_highest_price():
-    print(get_highest())
+    print(get_highest().to_json())
 
 
 # add crontab job to run */3 8-10 * * *
 @crontab.job(minute="*/3", hour="8-10")
 def scheduled_lowest_price():
-    print(get_lowest())
+    print(get_lowest().to_json())
 
 
 # add crontab job to run */5 11-12 * * 1,3,5
