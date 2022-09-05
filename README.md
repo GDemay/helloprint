@@ -57,6 +57,10 @@ flask --app app/app.py crontab run 80d5352791cf66871f31e8f33d16e9f0
 - MEDIAN_SKU: /sku/median # Get the first SKU by Median price
 - GET TIMEZONE: /timezone/<area>/<region> # Get the timezones from area or region
 
+## Test:
+```
+make test
+```
 ## Improvement: 
 
 Docker
