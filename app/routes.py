@@ -56,7 +56,7 @@ def get_best_sku():
 # Update a SKU from an ID by increasing it's price by 21%
 @routes_blueprint.route("/sku/<int:id>", methods=["PUT"])
 def update_sku(id):
-    return update_21(id).to_json()
+    return update_21(id)
 
 
 # Create SKU from form data

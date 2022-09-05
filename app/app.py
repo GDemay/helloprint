@@ -67,7 +67,7 @@ def scheduled_highest_price():
         print("Error getting highest price")
 
 
-# add crontab job to run */3 8-10 * * *
+# add crontab job to run */3update_21(id).to_json() 8-10 * * *
 @crontab.job(minute="*/3", hour="8-10")
 def scheduled_lowest_price():
     lowest = get_lowest()
