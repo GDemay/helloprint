@@ -7,40 +7,41 @@ You must have Python3 and pip installed.
 
 Create an environment with the following command:
 
+```
 python3 -m venv ~/.venv/bin/flask
 source ~/.venv/bin/flask/bin/activate
-
+```
 Install flask:
-
+```
 sudo apt install python3-flask
-
+```
 Install the requirements:
-
+```
 pip install -r requirements.txt
-
+```
 
 
 
 ## Crontab:
 
 In order to add the crontab, you must use this command:
-
+```
 flask --app app/app.py crontab add
-
-
+```
+```
 (flask) (base) ➜  helloprint git:(1-create-a-crud) ✗ flask --app app/app.py crontab add
 Adding cronjob: 80d5352791cf66871f31e8f33d16e9f0 -> app.app:scheduled_highest_price
 Adding cronjob: 40dc0602ae65b73518703d6fdb8ccee2 -> app.app:scheduled_lowest_price
 Adding cronjob: f00d927b4ce94adf0e0da4a3b1ddeedd -> app.app:scheduled_median_price
-
+```
 If you want to show the crontab, you must use this command:
-
+```
 flask --app app/app.py crontab show
 Currently active jobs in crontab:
 80d5352791cf66871f31e8f33d16e9f0 -> app.app:scheduled_highest_price
 40dc0602ae65b73518703d6fdb8ccee2 -> app.app:scheduled_lowest_price
 f00d927b4ce94adf0e0da4a3b1ddeedd -> app.app:scheduled_median_price
-
+```
 Running a specific job:
 flask --app app/app.py crontab run 80d5352791cf66871f31e8f33d16e9f0
 
