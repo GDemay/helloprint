@@ -68,7 +68,7 @@ def create_sku():
         quantity=request.form["quantity"],
         price=request.form["price"],
     )
-    return create(sku).to_json()
+    return create(sku)
 
 
 # Delete SKU from ID
