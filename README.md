@@ -20,6 +20,13 @@ Install the requirements:
 pip install -r requirements.txt
 ```
 
+Install Make
+
+```
+sudo apt install make
+```
+
+
 
 
 ## Crontab:
