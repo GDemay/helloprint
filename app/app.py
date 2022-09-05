@@ -2,12 +2,24 @@ import requests
 from flask import Flask
 from flask_crontab import Crontab
 from app.routes import routes_blueprint
-from app.database import db
 from app.config import BaseConfig, BasicConfig, TestConfig
 import os
 from statistics import median
 import click
-from app.models import SKUModel
+from app.models import db, SKUModel
+
+
+
+SQLALCHEMY_PATH = "/tmp/databassdsdsdsdssddsdse.db"
+SQLALCHEMY_DATABASE_URI = "sqlite:///" + SQLALCHEMY_PATH
+
+app = Flask(__name__)
+app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
+db.init_app(app)
+with app.app_context():
+     print(db)
+     db.create_all()
+     app.register_blueprint(routes_blueprint)
 
 
 def create_app():

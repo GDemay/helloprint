@@ -5,8 +5,7 @@ from statistics import median
 import requests
 from flask import Blueprint, request
 
-from app.database import db
-from app.models import SKUModel
+from app.models import SKUModel, db
 from app.core import get, get_all, update_dataset, get_5_highest, update_21, create, delete, get_lowest
 routes_blueprint = Blueprint("route_blueprint", __name__)
 
@@ -64,22 +63,7 @@ def create_sku():
         sku=request.form["sku"],
         product_title=request.form["product_title"],
         quantity=request.form["quantity"],
-        paper_size=request.form["paper_size"],
-        finished_size=request.form["finished_size"],
-        paper_type=request.form["paper_type"],
-        print_type=request.form["print_type"],
-        turnaround_time=request.form["turnaround_time"],
-        print_page_number=request.form["print_page_number"],
-        lamination=request.form["lamination"],
-        cover=request.form["cover"],
-        fold_type=request.form["fold_type"],
-        print_orientation=request.form["print_orientation"],
-        product_finishing=request.form["product_finishing"],
-        cut_type=request.form["cut_type"],
-        sets=request.form["sets"],
-        vat_rate=request.form["vat_rate"],
         price=request.form["price"],
-        spotUV=request.form["spotUV"],
     )
     return create(sku).to_json()
          

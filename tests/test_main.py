@@ -12,6 +12,8 @@ from base import BaseTestCase
 import logging
 
 LOGGER = logging.getLogger(__name__)
+
+
 class FlaskTestCase(BaseTestCase):
 
     def __init__(self, *args, **kwargs):
@@ -19,28 +21,39 @@ class FlaskTestCase(BaseTestCase):
         super(FlaskTestCase, self).__init__(*args, **kwargs)
 
     def test_create(self):
-        sku = create("This is a test", 42, 3)
+        sku = SKUModel(sku="This is a sku", product_title="test",
+                       quantity=1, price=1.0)
+        sku = create(sku)
+
         assert sku is not None
         # Get in db and check
         sku_db = get(sku.id)
-        # assert sku_db none 
+        # assert sku_db none
         assert sku_db is not None
 
         # check if the id is the same
         assert sku_db.id == sku.id
+        LOGGER.critical("sku_db.id: %s", sku_db.id)
 
-    
     def test_get(self):
         sku = get(1)
+
+        # check if sku = "Test" and quanity = 42
         assert sku is not None
+        assert sku.sku == "SKU0"
+        assert sku.quantity == 10
 
     def test_bad_get(self):
-          sku = get(9999999)
-          assert sku is None
-    
+        sku = get(9999999)
+        assert sku is None
+
     def test_get_all(self):
         sku = get_all()
         assert sku is not None
+
+
+"""
+    
 
     def test_get_best(self):
         sku = get_5_highest()
@@ -71,3 +84,4 @@ class FlaskTestCase(BaseTestCase):
         sku = get_median()
         assert sku is not None
   
+    """
