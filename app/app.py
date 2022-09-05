@@ -1,4 +1,3 @@
-import os
 from statistics import median
 
 import click
@@ -9,8 +8,9 @@ from flask_crontab import Crontab
 from app.config import BaseConfig, BasicConfig, TestConfig
 from app.models import SKUModel, db
 from app.routes import routes_blueprint
+from app.core import get_lowest, get_highest, get_median
 
-SQLALCHEMY_PATH = "/tmp/databassdsdsdsdssddsdse.db"
+SQLALCHEMY_PATH = "/tmp/databasehelloprint.db"
 SQLALCHEMY_DATABASE_URI = "sqlite:///" + SQLALCHEMY_PATH
 
 app = Flask(__name__)
@@ -34,6 +34,7 @@ def create_app():
 
 
 def create_app_test():
+    # TODO Duplicate code with create_app
     app = Flask(__name__)
     app.config["SECRET_KEY"] = "any secret key"
     app.config["SQLALCHEMY_DATABASE_URI"] = TestConfig.SQLALCHEMY_DATABASE_URI
@@ -59,25 +60,13 @@ if __name__ == "__main__":
 
 @crontab.job(minute="*/1", day_of_week="1-5")
 def scheduled_highest_price():
-    try:
-        if sku := SKUModel.query.order_by(SKUModel.price.desc()).first():
-            print(sku.to_json())
-        else:
-            print("No SKU found!")
-    except Exception as e:
-        print("Error while getting SKU", e)
+    print(get_highest().to_json())
 
 
 # add crontab job to run */3 8-10 * * *
 @crontab.job(minute="*/3", hour="8-10")
 def scheduled_lowest_price():
-    try:
-        if sku := SKUModel.query.order_by(SKUModel.price.asc()).first():
-            print(sku.to_json())
-        else:
-            print("No SKU found!")
-    except Exception as e:
-        print("Error while getting SKU", e)
+    print(get_lowest().to_json())
 
 
 # add crontab job to run */5 11-12 * * 1,3,5
@@ -85,9 +74,4 @@ def scheduled_lowest_price():
 
 @crontab.job(minute="*/5", hour="11-12", day_of_week="1,3,5")
 def scheduled_median_price():
-    try:
-        skus = SKUModel.query.all()
-        prices = [sku.price for sku in skus]
-        print({"median": median(prices)})
-    except Exception as e:
-        print("Error while getting SKU", e)
+    print(get_median())

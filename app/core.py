@@ -1,11 +1,11 @@
 import json
 import logging
-from asyncio.log import logger
 from statistics import median
+from flask import abort
 
 from app.config import BasicConfig
 from app.models import SKUModel, db
-
+from flask import Response
 LOGGER = logging.getLogger(__name__)
 
 
@@ -69,6 +69,7 @@ def update_21(id):
 
 
 def create(sku: SKUModel):
+    # TODO Check if this SKU already exists
     if not sku:
         return None
     try:
@@ -84,18 +85,21 @@ def delete(id):
     try:
         sku = db.session.query(SKUModel).get(id)
         if not sku:
-            return None
+            return Response("No sku found", status=404)
         db.session.delete(sku)
         db.session.commit()
-        return None
+        return Response("OK", status=200)
     except Exception as e:
         LOGGER.error(e)
-        return None
+    return Response("Error while deleting", status=500)
 
 
 def get_lowest():
     try:
-        return db.session.query(SKUModel).order_by(SKUModel.price.asc()).first()
+        sku = db.session.query(SKUModel).order_by(SKUModel.price.asc()).first()
+        if not sku:
+            return None
+        return sku
     except Exception as e:
         LOGGER.error("Error while getting lowest SKU", e)
         return None
@@ -103,7 +107,12 @@ def get_lowest():
 
 def get_highest():
     try:
-        return db.session.query(SKUModel).order_by(SKUModel.price.desc()).first()
+        sku = db.session.query(SKUModel).order_by(
+            SKUModel.price.desc()).first()
+        if not sku:
+            return None
+        return sku
+
     except Exception as e:
         LOGGER.error("Error while getting highest SKU", e)
         return None
@@ -112,6 +121,8 @@ def get_highest():
 def get_median():
     try:
         skus = db.session.query(SKUModel).order_by(SKUModel.price.asc()).all()
+        if not skus:
+            return None
         prices = [sku.price for sku in skus]
         return median(prices)
 

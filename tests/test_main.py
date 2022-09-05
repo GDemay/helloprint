@@ -1,11 +1,10 @@
 import logging
-import unittest
 
 import pytest
 from base import BaseTestCase
 from flask import Flask
+from flask import Response
 
-from app.app import create_app_test
 from app.core import (create, delete, get, get_5_highest, get_all, get_highest,
                       get_lowest, get_median, update_21, update_dataset)
 from app.models import SKUModel
@@ -21,7 +20,8 @@ class FlaskTestCase(BaseTestCase):
 
     def test_create(self):
         """Test create"""
-        sku = SKUModel(sku="This is a sku", product_title="test", quantity=1, price=1.0)
+        sku = SKUModel(sku="This is a sku",
+                       product_title="test", quantity=1, price=1.0)
         sku = create(sku)
 
         assert sku is not None
@@ -82,19 +82,21 @@ class FlaskTestCase(BaseTestCase):
         assert sku is not None
 
         # Deleting it
-        sku = delete(1)
-        assert sku is None
+        response_delete = delete(1)
+        # Get http response
+        assert response_delete.status_code == 200
 
     def test_get_lowest(self):
         sku = get_lowest()
 
         assert sku is not None
-        assert sku.price == 10
+        LOGGER.error("sku price: %s", sku.price)
+        assert sku.price == 10.0
 
     def test_get_highest(self):
         sku = get_highest()
         assert sku is not None
-        assert sku.price == 19
+        assert sku.price == 19.0
 
     def test_get_median(self):
         median = get_median()

@@ -74,3 +74,4 @@ Docker
 Better tests
 Better comments
 Better readme
+Use all the data from dataset (only sku, price, quantity are used)
