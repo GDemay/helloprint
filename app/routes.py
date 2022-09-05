@@ -1,12 +1,14 @@
-from itertools import product
 import json
+from itertools import product
 from statistics import median
 
 import requests
 from flask import Blueprint, request
 
+from app.core import (create, delete, get, get_5_highest, get_all, get_lowest,
+                      update_21, update_dataset)
 from app.models import SKUModel, db
-from app.core import get, get_all, update_dataset, get_5_highest, update_21, create, delete, get_lowest
+
 routes_blueprint = Blueprint("route_blueprint", __name__)
 
 
@@ -56,6 +58,7 @@ def get_best_sku():
 def update_sku(id):
     return update_21(id).to_json()
 
+
 # Create SKU from form data
 @routes_blueprint.route("/sku", methods=["POST"])
 def create_sku():
@@ -66,7 +69,6 @@ def create_sku():
         price=request.form["price"],
     )
     return create(sku).to_json()
-         
 
 
 # Delete SKU from ID

@@ -1,8 +1,8 @@
 from flask_testing import TestCase
 
-from app.models import SKUModel, db
 from app.app import create_app
 from app.config import BasicConfig
+from app.models import SKUModel, db
 
 
 class BaseTestCase(TestCase):
@@ -14,8 +14,12 @@ class BaseTestCase(TestCase):
     def setUp(self):
         db.create_all()
         for i in range(10):
-            sku = SKUModel(sku=f"SKU{str(i)}", price=(
-                10 + i), quantity=10 + i, product_title="Test")
+            sku = SKUModel(
+                sku=f"SKU{str(i)}",
+                price=(10 + i),
+                quantity=10 + i,
+                product_title="Test",
+            )
 
             db.session.add(sku)
         db.session.commit()

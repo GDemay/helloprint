@@ -12,7 +12,7 @@ class SKUModel(db.Model):
 
     # JSON serializer
     def to_json(self):
-        return { 
+        return {
             "id": self.id,
             "sku": self.sku,
             "product_title": self.product_title,

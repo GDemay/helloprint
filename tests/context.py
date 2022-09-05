@@ -1,5 +1,6 @@
-from app.app import create_app_test
 from flask_testing import TestCase
+
+from app.app import create_app_test
 from app.models import db
 
 
