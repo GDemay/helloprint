@@ -2,6 +2,7 @@ import json
 import logging
 from statistics import median
 from flask import abort
+from flask import json
 
 from app.config import BasicConfig
 from app.models import SKUModel, db
@@ -11,19 +12,25 @@ LOGGER = logging.getLogger(__name__)
 
 def get(id):
     try:
-        return db.session.query(SKUModel).get(id)
+        # return db.session.query(SKUModel).get(id)
+        sku = db.session.query(SKUModel).get(id)
+        if sku is None:
+            return Response("No sku found", status=404, mimetype="application/json")
+        return Response(json.dumps(sku.to_json()), status=200, mimetype="application/json")
     except Exception as e:
         LOGGER.error("Error while getting SKU", e)
-        return None
-    return None
+        return Response(f"Error while getting SKU {e}",  status=500, mimetype="application/json")
 
 
 def get_all():
     try:
-        return db.session.query(SKUModel).all()
+        skus = db.session.query(SKUModel).all()
+        if skus is None:
+            return Response("No sku found", status=404, mimetype="application/json")
+        skus = [sku.to_json() for sku in skus]
+        return Response(json.dumps(skus), status=200, mimetype="application/json")
     except Exception as e:
-        LOGGER.error("Error while getting all SKU", e)
-        return None
+        return Response(f"Error while getting all SKUS {e}",  status=500, mimetype="application/json")
 
 
 def update_dataset():
@@ -40,45 +47,47 @@ def update_dataset():
                 )
                 db.session.add(sku)
             db.session.commit()
-            return "OK", 200
+            return Response("OK",  status=200, mimetype="application/json")
+
         except Exception as e:
             # LOGGER.error("Error while updating dataset", e)
-            return {"message": "Error while updating dataset", "error": str(e)}, 500
+            return Response(f"Error while updating SKUS {e}",  status=500, mimetype="application/json")
 
 
 def get_5_highest():
     try:
-        return db.session.query(SKUModel).order_by(SKUModel.price.asc()).limit(5).all()
+        skus = db.session.query(SKUModel).order_by(
+            SKUModel.price.asc()).limit(5).all()
+        skus = [sku.to_json() for sku in skus]
+        return Response(json.dumps(skus), status=200, mimetype="application/json")
+
     except Exception as e:
-        LOGGER.error("Error while getting 5 highest SKU", e)
-        return None
-    return None
+        return Response(f"Error while getting 5 SKUS {e}",  status=500, mimetype="application/json")
 
 
 def update_21(id):
     try:
         sku = db.session.query(SKUModel).get(id)
         if not sku:
-            return None
+            return Response("No sku found", status=404, mimetype="application/json")
         sku.price = sku.price * 1.21
         db.session.commit()
+        return Response(json.dumps(sku.to_json()), status=200, mimetype="application/json")
     except Exception as e:
-        LOGGER.error(e)
-        return None
-    return sku
+        return Response(f"Error while update SKUS {e}",  status=500, mimetype="application/json")
 
 
 def create(sku: SKUModel):
     # TODO Check if this SKU already exists
     if not sku:
-        return None
+        return Response("No sku found", status=404, mimetype="application/json")
     try:
         db.session.add(sku)
         db.session.commit()
+        return Response(json.dumps(sku.to_json()), status=200, mimetype="application/json")
     except Exception as e:
         LOGGER.error(e)
-        return None
-    return sku
+        return Response(f"Error while create SKUS {e}",  status=500, mimetype="application/json")
 
 
 def delete(id):
@@ -90,19 +99,17 @@ def delete(id):
         db.session.commit()
         return Response("OK", status=200)
     except Exception as e:
-        LOGGER.error(e)
-    return Response("Error while deleting", status=500)
+        return Response(f"Error while deleting SKU {e}",  status=500, mimetype="application/json")
 
 
 def get_lowest():
     try:
         sku = db.session.query(SKUModel).order_by(SKUModel.price.asc()).first()
         if not sku:
-            return None
-        return sku
+            return Response("No sku found", status=404)
+        return Response(json.dumps(sku.to_json()), status=200, mimetype="application/json")
     except Exception as e:
-        LOGGER.error("Error while getting lowest SKU", e)
-        return None
+        return Response("Error while deleting", status=500)
 
 
 def get_highest():
@@ -110,22 +117,20 @@ def get_highest():
         sku = db.session.query(SKUModel).order_by(
             SKUModel.price.desc()).first()
         if not sku:
-            return None
-        return sku
+            return Response("No sku found", status=404)
+        return Response(json.dumps(sku.to_json()), status=200, mimetype="application/json")
 
     except Exception as e:
-        LOGGER.error("Error while getting highest SKU", e)
-        return None
+        return Response(f"Error while getting SKU {e}",  status=500, mimetype="application/json")
 
 
 def get_median():
     try:
         skus = db.session.query(SKUModel).order_by(SKUModel.price.asc()).all()
         if not skus:
-            return None
+            return Response("No sku found", status=404)
         prices = [sku.price for sku in skus]
-        return median(prices)
+        return Response(median(prices), status=200, mimetype="application/json")
 
     except Exception as e:
-        LOGGER.error("Error while getting median SKU", e)
-        return None
+        return Response(f"Error while getting SKU {e}",  status=500, mimetype="application/json")

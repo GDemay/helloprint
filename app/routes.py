@@ -32,14 +32,14 @@ def timezone(area, region):
 # Get one SKU
 @routes_blueprint.route("/sku/<int:id>")
 def get_sku(id):
-    sku = get(id)
-    return sku.to_json() if sku else ("Not found", 404)
-
+    return get(id)
 
 # Get all SKUs
+
+
 @routes_blueprint.route("/sku")
 def get_all_sku():
-    return json.dumps([sku.to_json() for sku in get_all()])
+    return get_all()
 
 
 @routes_blueprint.route("/sku/update", methods=["GET"])
@@ -48,15 +48,15 @@ def update_from_dataset():
 
 
 # Get the 5 best prices for a SKU
-@routes_blueprint.route("/sku/best", methods=["GET"])
+@routes_blueprint.route("/sku/highest", methods=["GET"])
 def get_best_sku():
-    return json.dumps([sku.to_json() for sku in get_5_highest()])
+    return get_5_highest()
 
 
 # Update a SKU from an ID by increasing it's price by 21%
 @routes_blueprint.route("/sku/<int:id>", methods=["PUT"])
 def update_sku(id):
-    return update_21(id).to_json()
+    return update_21(id)
 
 
 # Create SKU from form data
@@ -68,13 +68,13 @@ def create_sku():
         quantity=request.form["quantity"],
         price=request.form["price"],
     )
-    return create(sku).to_json()
+    return create(sku)
 
 
 # Delete SKU from ID
 @routes_blueprint.route("/sku/<int:id>", methods=["DELETE"])
 def delete_sku(id):
-    return delete(id), 200
+    return delete(id)
 
 
 # Return the lowest price for a SKU
