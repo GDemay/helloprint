@@ -11,7 +11,7 @@ from app.routes import routes_blueprint
 from app.core import get_lowest, get_highest, get_median
 
 SQLALCHEMY_PATH = "/tmp/databasehelloprint.db"
-SQLALCHEMY_DATABASE_URI = "sqlite:///" + SQLALCHEMY_PATH
+SQLALCHEMY_DATABASE_URI = f"sqlite:///{SQLALCHEMY_PATH}"
 
 app = Flask(__name__)
 app.config["SQLALCHEMY_DATABASE_URI"] = SQLALCHEMY_DATABASE_URI
